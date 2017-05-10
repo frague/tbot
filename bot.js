@@ -4,11 +4,6 @@ var Bot = require('node-telegram-bot-api');
 var bot;
 var fetcher;
 
-var syncer = function() {
-  console.log('Loop');
-  fetcher = setTimeout(syncer, 2000);
-};
-
 if (process.env.NODE_ENV === 'production') {
   bot = new Bot(token);
   bot.setWebHook(process.env.HEROKU_URL + bot.token, {
@@ -33,7 +28,5 @@ bot.onText(/^/, function (msg) {
 bot.on('webhook_error', function (error) {
   console.log(error.code);
 });
-
-syncer();
 
 module.exports = bot;
