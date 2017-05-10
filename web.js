@@ -9,6 +9,10 @@ app.get('/', function (req, res) {
   res.json({ version: packageInfo.version });
 });
 
+app.post('/push', function (req, res) {
+	console.log(req.body);
+});
+
 var server = app.listen(process.env.PORT, "0.0.0.0", function () {
   var host = server.address().address;
   var port = server.address().port;
