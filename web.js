@@ -2,7 +2,6 @@ var express = require('express');
 var packageInfo = require('./package.json');
 var bodyParser = require('body-parser');
 
-var channelId = -1001095005836;
 
 var app = express();
 app.use(bodyParser.json());
@@ -19,7 +18,7 @@ var server = app.listen(process.env.PORT, "0.0.0.0", function () {
 
 module.exports = function (bot) {
   app.post('/' + bot.token, function (req, res) {
-    console.log(JSON.stringify(req.body));
+    console.log('from channel:', JSON.stringify(req.body));
     bot.processUpdate(req.body);
     res.sendStatus(200);
   });
@@ -27,8 +26,8 @@ module.exports = function (bot) {
   app.post('/push', function (req, res) {
     var body = req.body;
 
-    bot.sendMessage(channelId, body.user_name + ': ' + body.text);
-    console.log('POST received:', req.body);
+    bot.sendMessage(bot.channelId, body.user_name + ': ' + body.text);
+    console.log('from chat:', req.body);
     res.status(200).end();
   });
 

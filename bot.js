@@ -1,8 +1,29 @@
 var token = process.env.TOKEN;
 
 var Bot = require('node-telegram-bot-api');
+var request = require('request');
+var channelId = -1001100829569;
+
 var bot;
 var fetcher;
+
+function postToChat(userName, message) {
+  var options = {
+      url: 'http://bezumnoe.ru/services/external_messages.service.php',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      form: {user: userName, message: message}
+  }
+
+  request(options, function (error, response, body) {
+    if (!error && response.statusCode === 200) {
+      // Print out the response body
+      console.log(body);
+    }
+  })
+}
 
 if (process.env.NODE_ENV === 'production') {
   bot = new Bot(token);
@@ -15,11 +36,14 @@ if (process.env.NODE_ENV === 'production') {
   });
 };
 
+bot.channelId = channelId;
+
 console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.onText(/^/, function (msg) {
   var name = msg.from.first_name;
-  bot.sendMessage(msg.chat.id, 'Hello, ' + name + '!');
+  postToChat(msg.from.first_name, msg.text);
+  // bot.sendMessage(msg.chat.id, 'Hello, ' + name + '!');
 });
 
 bot.on('webhook_error', function (error) {
