@@ -11,12 +11,6 @@ app.get('/', function (req, res) {
   res.json({ version: packageInfo.version });
 });
 
-app.post('/push', function (req, res) {
-  bot.sendMessage(channelId, req.body.text);
-	console.log('POST received:', req.body);
-  res.status(200).end();
-});
-
 var server = app.listen(process.env.PORT, "0.0.0.0", function () {
   var host = server.address().address;
   var port = server.address().port;
@@ -29,4 +23,11 @@ module.exports = function (bot) {
     bot.processUpdate(req.body);
     res.sendStatus(200);
   });
+
+  app.post('/push', function (req, res) {
+    bot.sendMessage(channelId, req.body.text);
+    console.log('POST received:', req.body);
+    res.status(200).end();
+  });
+
 };
