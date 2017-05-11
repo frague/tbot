@@ -41,7 +41,7 @@ bot.channelId = channelId;
 console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.onText(/^/, function (msg) {
-  if (msg.chat.id === channelId) {
+  if (msg.chat.id !== channelId) {
     bot.sendMessage(msg.chat.id, 'Привет, ' + name + '! Заходи в группу https://t.me/bezumnoe');
   } else {
     postToChat(msg.from.first_name, msg.text);
