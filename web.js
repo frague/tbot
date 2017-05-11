@@ -11,7 +11,7 @@ app.get('/', function (req, res) {
 
 app.post('/push', function (req, res) {
 	console.log('POST received:', req.body);
-  res.send('Gotcha');
+  res.status(200).end();
 });
 
 var server = app.listen(process.env.PORT, "0.0.0.0", function () {
@@ -22,6 +22,7 @@ var server = app.listen(process.env.PORT, "0.0.0.0", function () {
 
 module.exports = function (bot) {
   app.post('/' + bot.token, function (req, res) {
+    console.log(JSON.stringify(req.body));
     bot.processUpdate(req.body);
     res.sendStatus(200);
   });
