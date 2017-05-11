@@ -41,9 +41,11 @@ bot.channelId = channelId;
 console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.onText(/^/, function (msg) {
-  var name = msg.from.first_name;
-  postToChat(msg.from.first_name, msg.text);
-  // bot.sendMessage(msg.chat.id, 'Hello, ' + name + '!');
+  if (msg.chat.id === channelId) {
+    bot.sendMessage(msg.chat.id, 'Привет, ' + name + '! Заходи в группу https://t.me/bezumnoe');
+  } else {
+    postToChat(msg.from.first_name, msg.text);
+  }
 });
 
 bot.on('webhook_error', function (error) {
