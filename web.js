@@ -2,6 +2,8 @@ var express = require('express');
 var packageInfo = require('./package.json');
 var bodyParser = require('body-parser');
 
+var channelId = -1001095005836;
+
 var app = express();
 app.use(bodyParser.json());
 
@@ -10,6 +12,7 @@ app.get('/', function (req, res) {
 });
 
 app.post('/push', function (req, res) {
+  bot.sendMessage(channelId, req.body.text);
 	console.log('POST received:', req.body);
   res.status(200).end();
 });
