@@ -51,11 +51,15 @@ bot.onText(/^/, function (msg) {
 
   switch (command) {
     case 'link':
-      linkAccounts(msg.from.id, msg.from.first_name)
-        .then(function (body) {
-          console.log(body);
-          bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
-        });
+      if (msg.chat.type === 'private') {
+        linkAccounts(msg.from.id, msg.from.first_name)
+          .then(function (body) {
+            // console.log(body);
+            bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
+          });
+      } else {
+        bot.sendMessage(msg.chat.id, 'Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
+      }
       break;
     default:
       if (fromMainChannel) {
