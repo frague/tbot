@@ -46,13 +46,11 @@ bot.onText(/^/, function (msg) {
   var fromMainChannel = msg.chat.id === channelId;
   switch (text) {
     case '/link':
-      if (!fromMainChannel) {
-        linkAccounts(msg.from.id, msg.from.first_name)
-          .then(function (body) {
-            console.log(body);
-            bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
-          });
-      }
+      linkAccounts(msg.from.id, msg.from.first_name)
+        .then(function (body) {
+          console.log(body);
+          bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
+        });
       break;
     default:
       if (fromMainChannel) {
