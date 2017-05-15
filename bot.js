@@ -59,7 +59,10 @@ bot.onText(/^/, function (msg) {
       break;
     default:
       if (fromMainChannel) {
-        postToChat(msg.from.first_name, text, msg.from.id);
+        postToChat(msg.from.first_name, text, msg.from.id)
+          .then(function (body) {
+            console.log('Response:', body);
+          });
       } else {
         bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
       }
