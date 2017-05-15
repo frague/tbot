@@ -44,19 +44,19 @@ console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 bot.onText(/^/, function (msg) {
   var text = msg.text;
   var fromMainChannel = msg.chat.id === channelId;
-  if (!fromMainChannel) {
-    // Bot actions
-    switch (text) {
-      case '/link':
+  switch (text) {
+    case '/link':
+      if (!fromMainChannel) {
         linkAccounts(msg.from.id, msg.from.first_name)
           .then(function (body) {
             console.log(body);
-            bot.sendMessage(msg.chat.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
+            bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
           });
-        break;
-      default:
-        bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
-    }
+      }
+      break;
+    default:
+      bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
+  }
   } else {
     postToChat(msg.from.first_name, text);
   }
