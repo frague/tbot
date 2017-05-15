@@ -17,8 +17,11 @@ function sendPost(endpoint, data) {
   return request(options);
 }
 
-function postToChat(userName, message) {
-  return sendPost('external_messages.service', {user: userName, message: message});
+function postToChat(userName, message, userId) {
+  return sendPost(
+    'external_messages.service', 
+    {user: userName, message: message, user_id: userId}
+  );
 }
 
 function linkAccounts(userId, userName) {
@@ -45,7 +48,7 @@ bot.onText(/^/, function (msg) {
   var text = msg.text;
   var command = text.replace(/\/([^@]+)(@.*){0,1}$/g, '$1');
   var fromMainChannel = msg.chat.id === channelId;
-  
+
   switch (command) {
     case 'link':
       linkAccounts(msg.from.id, msg.from.first_name)
@@ -56,7 +59,7 @@ bot.onText(/^/, function (msg) {
       break;
     default:
       if (fromMainChannel) {
-        postToChat(msg.from.first_name, text);
+        postToChat(msg.from.first_name, text, msg.from.id);
       } else {
         bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
       }
