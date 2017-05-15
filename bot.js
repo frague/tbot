@@ -49,7 +49,7 @@ bot.onText(/^/, function (msg) {
 });
 
 bot.repost = function (message) {
-  var text = message.user_name + (message.user_id === message.from_user_id ? ' ' : ': ') + message.text;
+  var text = message.user_name + (message.user_id === message.to_user_id ? ' ' : ': ') + message.text;
   this.sendMessage(this.channelId, text);
 };
 
