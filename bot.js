@@ -48,6 +48,11 @@ bot.onText(/^/, function (msg) {
   }
 });
 
+bot.repost = function (message) {
+  var text = message.user_name + (message.user_id === message.from_user_id ? ' ' : ': ') + message.text;
+  this.sendMessage(this.channelId, text);
+};
+
 bot.on('webhook_error', function (error) {
   console.log(error.code);
 });
