@@ -50,7 +50,7 @@ bot.onText(/^/, function (msg) {
 
 bot.repost = function (message) {
   var text = '<b>' + message.user_name + '</b>' + (message.user_id === message.to_user_id ? ' ' : ': ') + message.text;
-  this.sendMessage(this.channelId, '', text);
+  this.sendMessage(this.channelId, '', {parse_mode: text});
 };
 
 bot.on('webhook_error', function (error) {
