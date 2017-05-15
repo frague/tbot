@@ -49,7 +49,12 @@ bot.onText(/^/, function (msg) {
 });
 
 bot.repost = function (message) {
-  var text = '<b>' + message.user_name + '</b>' + (message.user_id === message.to_user_id ? ' ' : ': ') + message.text;
+  var text;
+  if (message.user_id === message.to_user_id) {
+    text = '<i>' + message.user_name + ' ' + message.text + '</i>';
+  } else {
+    text = '<b>' + message.user_name + '</b>: ' + message.text;
+  }
   this.sendMessage(this.channelId, text, {parse_mode: 'HTML'});
 };
 
