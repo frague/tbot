@@ -63,7 +63,7 @@ bot.onText(/^/, function (msg) {
     // Bot actions
     switch (text) {
       case '/link':
-        linkAccounts(msg.from.user_id, msg.from.username);
+        linkAccounts(msg.from.id, msg.from.first_name);
         break;
       default:
         bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
