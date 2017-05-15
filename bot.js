@@ -55,11 +55,12 @@ bot.onText(/^/, function (msg) {
       }
       break;
     default:
-      bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
-  }
-  } else {
-    postToChat(msg.from.first_name, text);
-  }
+      if (fromMainChannel) {
+        postToChat(msg.from.first_name, text);
+      } else {
+        bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
+      }
+    }
 });
 
 bot.repost = function (message) {
