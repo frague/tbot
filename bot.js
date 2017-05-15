@@ -7,22 +7,37 @@ var channelId = -1001100829569;
 var bot;
 var fetcher;
 
-function postToChat(userName, message) {
+function sendPost(endpoint, data, callback) {
   var options = {
-      url: 'http://bezumnoe.ru/services/external_messages.service.php',
+      url: 'http://bezumnoe.ru/services/' + endpoint + '.php',
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      form: {user: userName, message: message}
+      form: data
   }
 
-  request(options, function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-      // Print out the response body
-      console.log(body);
+  return request(options, function (error, response, body) {
+    if (callback) {
+      callback(error, response, body);
     }
   })
+}
+
+function postToChat(userName, message) {
+  sendPost('external_messages.service', {user: userName, message: message});
+}
+
+function linkAccounts(userId, userName) {
+  sendPost(
+    'telegram_linker.service',
+    {user_id: userId, username: userName},
+    function (error, response, body) {
+      if (!error && response.statusCode === 200) {
+        console.log(response.body);
+      }
+    }
+  );
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -41,10 +56,19 @@ bot.channelId = channelId;
 console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.onText(/^/, function (msg) {
-  if (msg.chat.id !== channelId) {
-    bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
+  var text = msg.text;
+  var fromMainChannel = msg.chat.id === channelId;
+  if (!fromMainChannel) {
+    // Bot actions
+    switch (text) {
+      case '/link':
+        linkAccounts(msg.from.user_id, msg.from.username);
+        break;
+      default:
+        bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
+    }
   } else {
-    postToChat(msg.from.first_name, msg.text);
+    postToChat(msg.from.first_name, text);
   }
 });
 
