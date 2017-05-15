@@ -43,9 +43,10 @@ console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
 
 bot.onText(/^/, function (msg) {
   var text = msg.text;
+  var command = text.replace(/\/(^[@]+)(@.*$){0,1}/g, '$1');
   var fromMainChannel = msg.chat.id === channelId;
-  switch (text) {
-    case '/link':
+  switch (command) {
+    case 'link':
       linkAccounts(msg.from.id, msg.from.first_name)
         .then(function (body) {
           console.log(body);
