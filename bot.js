@@ -14,7 +14,6 @@ function sendPost(endpoint, data) {
       form: data,
       json: true
   }
-
   return request(options);
 }
 
@@ -51,8 +50,8 @@ bot.onText(/^/, function (msg) {
       case '/link':
         linkAccounts(msg.from.id, msg.from.first_name)
           .then(function (body) {
-            console.log(response.body);
-            bot.sendMessage(msg.chat.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + response.body.uuid);
+            console.log(body);
+            bot.sendMessage(msg.chat.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
           });
         break;
       default:
