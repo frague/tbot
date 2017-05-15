@@ -29,6 +29,7 @@ function postToChat(userName, message) {
 }
 
 function linkAccounts(userId, userName) {
+  console.log('Linking', userId, userName);
   sendPost(
     'telegram_linker.service',
     {user_id: userId, username: userName},
