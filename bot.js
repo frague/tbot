@@ -77,10 +77,11 @@ bot.repost = function (message) {
   var text = message.text;
   var boldLinks = false;
   if (message.user_id === '') {
-    // text = '<i>' + text.replace(/&[lr]aque;/g, '\"') + '</i>';
-    text = text.replace(/&[lr]aquo;/g, '"');
-    boldLinks = true;
+    // Topic change
+    text = '<i>' +  (text.replace(/&[lr]aquo;/g, '"')) + '</i>';
+    text = text.replace(/<a[^>]*>/g, '').replace(/<\/a>/g, '');
   } else if (message.user_id === message.to_user_id) {
+    // /me message
     text = '<i>' + message.user_name + ' ' + text + '</i>';
     console.log(text);
   } else if (message.user_id === -2) {
@@ -92,6 +93,7 @@ bot.repost = function (message) {
     text = '&#8678; ' + text;
     boldLinks = true;
   } else {
+    // Everything else
     text = '<b>' + message.user_name + '</b>: ' + text;
   }
   if (boldLinks) {
