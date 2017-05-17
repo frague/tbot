@@ -76,7 +76,9 @@ bot.onText(/^/, function (msg) {
 bot.repost = function (message) {
   var text;
   var boldLinks = false;
-  if (message.user_id === message.to_user_id) {
+  if (message.user_id === '') {
+    boldLinks = true;
+  } else if (message.user_id === message.to_user_id) {
     text = '<i>' + message.user_name + ' ' + message.text + '</i>';
   } else if (message.user_id === -2) {
     // Entering
