@@ -74,22 +74,22 @@ bot.onText(/^/, function (msg) {
 });
 
 bot.repost = function (message) {
-  var text;
+  var text = message.text;
   var boldLinks = false;
   if (message.user_id === '') {
     boldLinks = true;
   } else if (message.user_id === message.to_user_id) {
-    text = '<i>' + message.user_name + ' ' + message.text + '</i>';
+    text = '<i>' + message.user_name + ' ' + text + '</i>';
   } else if (message.user_id === -2) {
     // Entering
-    text = '&#8680; ' + message.text;
+    text = '&#8680; ' + text;
     boldLinks = true;
   } else if (message.user_id === -3) {
     // Quiting
-    text = '&#8678; ' + message.text;
+    text = '&#8678; ' + text;
     boldLinks = true;
   } else {
-    text = '<b>' + message.user_name + '</b>: ' + message.text;
+    text = '<b>' + message.user_name + '</b>: ' + text;
   }
   if (boldLinks) {
     text = text.replace(/<a[^>]*>/g, '<b>').replace(/<\/a>/g, '</b>');
