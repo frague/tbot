@@ -81,6 +81,7 @@ bot.repost = function (message) {
     boldLinks = true;
   } else if (message.user_id === message.to_user_id) {
     text = '<i>' + message.user_name + ' ' + text + '</i>';
+    console.log(text);
   } else if (message.user_id === -2) {
     // Entering
     text = '&#8680; ' + text;
