@@ -75,16 +75,22 @@ bot.onText(/^/, function (msg) {
 
 bot.repost = function (message) {
   var text;
+  var boldLinks = false;
   if (message.user_id === message.to_user_id) {
     text = '<i>' + message.user_name + ' ' + message.text + '</i>';
   } else if (message.user_id === -2) {
     // Entering
-    text = '&#11153;' + message.text;
+    text = '&#8680; ' + message.text;
+    boldLinks = true;
   } else if (message.user_id === -3) {
     // Quiting
-    text = '&#11152;' + message.text;
+    text = '&#8678; ' + message.text;
+    boldLinks = true;
   } else {
     text = '<b>' + message.user_name + '</b>: ' + message.text;
+  }
+  if (boldLinks) {
+    text = text.replace(/<a[^>]*>/g, '<b>').replace(/<\/a>/g, '</b>');
   }
   this.sendMessage(this.channelId, text, {parse_mode: 'HTML'});
 };
