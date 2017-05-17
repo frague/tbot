@@ -77,7 +77,8 @@ bot.repost = function (message) {
   var text = message.text;
   var boldLinks = false;
   if (message.user_id === '') {
-    text = '<i>' + text.replace(/&[lr]aque;/g, '\"') + '</i>';
+    // text = '<i>' + text.replace(/&[lr]aque;/g, '\"') + '</i>';
+    text = text.replace(/&[lr]aque;/g, '"');
     boldLinks = true;
   } else if (message.user_id === message.to_user_id) {
     text = '<i>' + message.user_name + ' ' + text + '</i>';
