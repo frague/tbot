@@ -79,7 +79,7 @@ bot.repost = function (message) {
   if (message.user_id === '') {
     // Topic change
     text = '<i>' +  (text.replace(/&[lr]aquo;/g, '"')) + '</i>';
-    text = '&#9888; ' + (text.replace(/<a[^>]*>/g, '').replace(/<\/a>/g, ''));
+    text = '&#127987; ' + (text.replace(/<a[^>]*>/g, '').replace(/<\/a>/g, ''));
   } else if (message.user_id === message.to_user_id) {
     // /me message
     text = '<i>' + message.user_name + ' ' + text + '</i>';
