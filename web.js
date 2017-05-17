@@ -25,8 +25,8 @@ module.exports = function (bot) {
 
   app.post('/push', function (req, res) {
     var body = req.body;
-    bot.repost(req.body);
-    console.log('from chat:', req.body);
+    bot.repost(body);
+    console.log('from chat:', body);
     res.status(200).end();
   });
 

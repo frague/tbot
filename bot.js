@@ -77,6 +77,12 @@ bot.repost = function (message) {
   var text;
   if (message.user_id === message.to_user_id) {
     text = '<i>' + message.user_name + ' ' + message.text + '</i>';
+  } else if (message.user_id === -2) {
+    // Entering
+    text = '&#11153;' + message.text;
+  } else if (message.user_id === -3) {
+    // Quiting
+    text = '&#11152;' + message.text;
   } else {
     text = '<b>' + message.user_name + '</b>: ' + message.text;
   }
