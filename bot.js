@@ -47,8 +47,6 @@ function KickActions(message, bot, isKick) {
         .then(function(body) {
           var isAllowed = body.me >= 20 && body.me >= body.target;
           if (isAllowed) {
-            console.log(bot);
-            bot.sendMessage(message.chat.id, 'Ooops...');
             if (isKick) {
               return bot.kickChatMember(message.chat.id, reply.from.id);
             } else {
