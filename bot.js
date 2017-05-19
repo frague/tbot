@@ -46,7 +46,10 @@ function KickActions(message, bot, action) {
       )
         .then(function(body) {
           var isAllowed = body.me >= 20 && body.me >= body.target;
-          bot.sendMessage(message.chat.id, isAllowed ? 'Можно' : 'Нельзя'); 
+          // bot.sendMessage(message.chat.id, isAllowed ? 'Можно' : 'Нельзя'); 
+          if (isAllowed) {
+            bot[action](message.chat.id, reply.from.id);
+          }
         })
     });
 }
@@ -73,10 +76,10 @@ bot.onText(/^/, function (msg) {
 
   switch (command) {
     case 'kick':
-      KickActions(msg, bot, bot.kickChatMember);
+      KickActions(msg, bot, 'kickChatMember');
       break;
     case 'unban':
-      KickActions(msg, bot, bot.unbanChatMember);
+      KickActions(msg, bot, 'unbanChatMember');
       break;
     case 'link':
       if (msg.chat.type === 'private') {
