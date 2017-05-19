@@ -29,7 +29,7 @@ function linkAccounts(userId, userName) {
   return sendPost('telegram_linker.service', {user_id: userId, username: userName});
 }
 
-function KickActions(message, bot, action) {
+function KickActions(message, bot, isKick) {
   var reply = message.reply_to_message;
   var fromId = message.from.id;
   if (!reply) {
@@ -48,7 +48,13 @@ function KickActions(message, bot, action) {
           var isAllowed = body.me >= 20 && body.me >= body.target;
           // bot.sendMessage(message.chat.id, isAllowed ? 'Можно' : 'Нельзя'); 
           if (isAllowed) {
-            bot[action](message.chat.id, reply.from.id);
+            if (isKick) {
+              return bot.kickChatMember(message.chat.id, reply.from.id);
+            } else {
+              return bot.unbanChatMember(message.chat.id, reply.from.id);
+            }
+          } else {
+            return bot.sendMessage(message.chat.id, 'Прав маловато...');
           }
         })
     });
@@ -76,10 +82,10 @@ bot.onText(/^/, function (msg) {
 
   switch (command) {
     case 'kick':
-      KickActions(msg, bot, 'kickChatMember');
+      KickActions(msg, bot, true);
       break;
     case 'unban':
-      KickActions(msg, bot, 'unbanChatMember');
+      KickActions(msg, bot, false);
       break;
     case 'link':
       if (msg.chat.type === 'private') {
