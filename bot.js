@@ -29,6 +29,26 @@ function linkAccounts(userId, userName) {
   return sendPost('telegram_linker.service', {user_id: userId, username: userName});
 }
 
+function KickActions(message, bot, action) {
+  var reply = message.reply_to_message;
+  var fromId = message.from.id;
+  if (!reply) {
+    return bot.sendMessage(message.chat.id, 'Это работает только в ответе на сообщение');
+  }
+  var me = bot.getMe();
+  if (reply.from.id === me.id) {
+    return bot.sendMessage(message.chat.id, 'Не балуй!');
+  }
+  return sendPost(
+    'rights.service', 
+    {mtid: fromId, ttid: reply.from.id}
+  )
+    .then(function(body) {
+      var isAllowed = body.me >= 20 && body.me >= body.target;
+      bot.sendMessage(message.chat.id, isAllowed ? 'Можно' : 'Нельзя'); 
+    })
+}
+
 if (process.env.NODE_ENV === 'production') {
   bot = new Bot(token);
   bot.setWebHook(process.env.HEROKU_URL + bot.token, {
@@ -50,6 +70,12 @@ bot.onText(/^/, function (msg) {
   var fromMainChannel = msg.chat.id === channelId;
 
   switch (command) {
+    case 'kick':
+      KickActions(msg, bot, bot.kickChatMember);
+      break;
+    case 'unban':
+      KickActions(msg, bot, bot.unbanChatMember);
+      break;
     case 'link':
       if (msg.chat.type === 'private') {
         linkAccounts(msg.from.id, msg.from.first_name)
