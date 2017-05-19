@@ -35,19 +35,20 @@ function KickActions(message, bot, action) {
   if (!reply) {
     return bot.sendMessage(message.chat.id, 'Это работает только в ответе на сообщение');
   }
-  var me = bot.getMe();
-  console.log(me);
-  if (reply.from.id === me.id) {
-    return bot.sendMessage(message.chat.id, 'Не балуй!');
-  }
-  return sendPost(
-    'rights.service', 
-    {mtid: fromId, ttid: reply.from.id}
-  )
-    .then(function(body) {
-      var isAllowed = body.me >= 20 && body.me >= body.target;
-      bot.sendMessage(message.chat.id, isAllowed ? 'Можно' : 'Нельзя'); 
-    })
+  bot.getMe()
+    .then(function (me) {
+      if (reply.from.id === me.id) {
+        return bot.sendMessage(message.chat.id, 'Не балуй!');
+      }
+      return sendPost(
+        'rights.service', 
+        {mtid: fromId, ttid: reply.from.id}
+      )
+        .then(function(body) {
+          var isAllowed = body.me >= 20 && body.me >= body.target;
+          bot.sendMessage(message.chat.id, isAllowed ? 'Можно' : 'Нельзя'); 
+        })
+    });
 }
 
 if (process.env.NODE_ENV === 'production') {
