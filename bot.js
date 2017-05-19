@@ -35,7 +35,7 @@ function KickActions(message, bot, isKick) {
   if (!reply) {
     return bot.sendMessage(message.chat.id, 'Это работает только в ответе на сообщение');
   }
-  bot.getMe()
+  return bot.getMe()
     .then(function (me) {
       if (reply.from.id === me.id) {
         return bot.sendMessage(message.chat.id, 'Не балуй!');
@@ -46,8 +46,8 @@ function KickActions(message, bot, isKick) {
       )
         .then(function(body) {
           var isAllowed = body.me >= 20 && body.me >= body.target;
-          // bot.sendMessage(message.chat.id, isAllowed ? 'Можно' : 'Нельзя'); 
           if (isAllowed) {
+            console.log(bot);
             if (isKick) {
               return bot.kickChatMember(message.chat.id, reply.from.id);
             } else {
