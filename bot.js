@@ -25,7 +25,7 @@ function postToChat(userName, message, userId) {
 }
 
 function linkAccounts(userId, userName) {
-  console.log('Linking', userId, userName);
+  //console.log('Linking', userId, userName);
   return sendPost('telegram_linker.service', {user_id: userId, username: userName});
 }
 
@@ -101,7 +101,7 @@ bot.onText(/^/, function (msg) {
         linkAccounts(msg.from.id, msg.from.first_name)
           .then(function (body) {
             // console.log(body);
-            bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe залогиньтесь в чат и перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid);
+            bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid + ' и авторизуйтесь');
           });
       } else {
         bot.sendMessage(msg.chat.id, 'Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
@@ -111,7 +111,7 @@ bot.onText(/^/, function (msg) {
       if (fromMainChannel) {
         postToChat(msg.from.first_name, text, msg.from.id)
           .then(function (body) {
-            console.log('Response:', body);
+            // console.log('Response:', body);
           });
       } else {
         bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
@@ -129,7 +129,7 @@ bot.repost = function (message) {
   } else if (message.user_id === message.to_user_id) {
     // /me message
     text = '<i>' + message.user_name + ' ' + text + '</i>';
-    console.log(text);
+    // console.log(text);
   } else if (message.user_id === -2) {
     // Entering
     text = '&#8680; ' + text;
