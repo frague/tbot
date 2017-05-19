@@ -32,13 +32,14 @@ function linkAccounts(userId, userName) {
 function KickActions(message, bot, isKick) {
   var reply = message.reply_to_message;
   var fromId = message.from.id;
+  var chatId = message.chat.id;
   if (!reply) {
-    return bot.sendMessage(message.chat.id, 'Это работает только в ответе на сообщение');
+    return bot.sendMessage(chatId, 'Это работает только в ответе на сообщение');
   }
   return bot.getMe()
     .then(function (me) {
       if (reply.from.id === me.id) {
-        return bot.sendMessage(message.chat.id, 'Не балуй!');
+        return bot.sendMessage(chatId, 'Не балуй!');
       }
       return sendPost(
         'rights.service', 
@@ -47,13 +48,24 @@ function KickActions(message, bot, isKick) {
         .then(function(body) {
           var isAllowed = body.me >= 20 && body.me >= body.target;
           if (isAllowed) {
+            var name = message.from.first_name;
             if (isKick) {
-              return bot.kickChatMember(message.chat.id, reply.from.id);
+              return bot.kickChatMember(chatId, reply.from.id)
+                .then(function (result) {
+                  if (result) {
+                    bot.sendMessage(chatId, '<i>' + name + ' занесён в черный список</i>', {parse_mode: 'HTML'});
+                  }
+                });
             } else {
-              return bot.unbanChatMember(message.chat.id, reply.from.id);
+              return bot.unbanChatMember(chatId, reply.from.id)
+                .then(function (result) {
+                  if (result) {
+                    bot.sendMessage(chatId, '<i>' + name + ' удалён из черного списка</i>', {parse_mode: 'HTML'});
+                  }
+                });
             }
           } else {
-            return bot.sendMessage(message.chat.id, 'Прав маловато...');
+            return bot.sendMessage(chatId, 'Прав маловато...');
           }
         })
     });
