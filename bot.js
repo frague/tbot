@@ -48,7 +48,7 @@ function KickActions(message, bot, isKick) {
         .then(function(body) {
           var isAllowed = body.me >= 20 && body.me >= body.target;
           if (isAllowed) {
-            var name = message.from.first_name;
+            var name = reply.from.first_name;
             if (isKick) {
               return bot.kickChatMember(chatId, reply.from.id)
                 .then(function (result) {
