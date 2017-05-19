@@ -36,6 +36,7 @@ function KickActions(message, bot, action) {
     return bot.sendMessage(message.chat.id, 'Это работает только в ответе на сообщение');
   }
   var me = bot.getMe();
+  console.log(me);
   if (reply.from.id === me.id) {
     return bot.sendMessage(message.chat.id, 'Не балуй!');
   }
