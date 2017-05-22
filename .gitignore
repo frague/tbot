@@ -4,3 +4,4 @@ node_modules/*
 .env
 key.pem
 
+npm-debug.log
