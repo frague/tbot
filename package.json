@@ -5,17 +5,21 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "export $(cat .env | xargs) && node index.js",
+    "start": "export $(cat .env | xargs) && ./node_modules/.bin/babel-node index.js",
     "set_env": "export $(cat .env | xargs)",
     "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js"
   },
   "author": "Nick Bogdanov",
   "license": "ISC",
   "dependencies": {
+    "babel": "^6.23.0",
     "body-parser": "^1.17.1",
     "express": "^4.13.4",
     "node-telegram-bot-api": "^0.27.1",
     "request": "^2.81.0",
     "request-promise": "^4.2.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1"
   }
 }
