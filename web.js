@@ -21,19 +21,19 @@ var server = app.listen(process.env.PORT || 8080, '0.0.0.0', () => {
 });
 
 module.exports = Bot => {
-  var bot = new Bot();
+  var bezumnoe = new Bot();
 
-  app.post('/' + bot.token, (req, res) => {
+  app.post('/' + token, (req, res) => {
     // Endpoint fot telegram to send its updates
     console.log('from channel:', JSON.stringify(req.body));
-    bot.processUpdate(req.body);
+    bezumnoe.bot.processUpdate(req.body);
     res.sendStatus(200);
   });
 
   app.post('/push', (req, res) => {
     // Endpoint for chat to push messages to
     var body = req.body;
-    bot.repost(body);
+    bezumnoe.repost(body);
     console.log('from chat:', body);
     res.status(200).end();
   });

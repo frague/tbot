@@ -86,7 +86,7 @@ class BezumnoeBot {
     if (boldLinks) {
       text = text.replace(/<a[^>]*>/g, '<b>').replace(/<\/a>/g, '</b>');
     }
-    this.sendMessage(settings.channelId, text, {parse_mode: 'HTML'});
+    this.bot.sendMessage(settings.channelId, text, {parse_mode: 'HTML'});
   };
 
   sendPost(endpoint, data) {
