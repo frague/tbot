@@ -25,43 +25,44 @@ class BezumnoeBot {
     });
   }
 
+  processTelegramUpdate(data) {
+    this.bot.processUpdate(data);
+  }
 
-  processMessage(msg) {
-      var text = msg.text;
-      var command = text.replace(/\/([^@]+)(@.*){0,1}$/g, '$1');
-      var fromMainChannel = msg.chat.id === settings.channelId;
+  processMessage(message) {
+    var text = message.text;
+    var command = text.replace(/\/([^@]+)(@.*){0,1}$/g, '$1');
+    var fromMainChannel = message.chat.id === settings.channelId;
 
-      switch (command) {
-        case 'kick':
-          this.kickActions(msg, true);
-          break;
-        case 'unban':
-          this.kickActions(msg, false);
-          break;
-        case 'link':
-          if (msg.chat.type === 'private') {
-            this.linkAccounts(msg.from.id, msg.from.first_name)
-              .then(body => {
-                // console.log(body);
-                this.bot.sendMessage(msg.from.id, 'Для связи аккаунтов telegram и bezumnoe перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid + ' и авторизуйтесь');
-              });
-          } else {
-            this.bot.sendMessage(msg.chat.id, 'Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
-          }
-          break;
-        default:
-          if (fromMainChannel) {
-            this.postToChat(msg.from.first_name, text, msg.from.id)
-              .then(body => {
-                // console.log('Response:', body);
-              });
-          } else {
-            this.bot.sendMessage(msg.chat.id, 'Привет, ' + msg.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
-          }
+    switch (command) {
+      case 'kick':
+        this.kickActions(message, true);
+        break;
+      case 'unban':
+        this.kickActions(message, false);
+        break;
+      case 'link':
+        if (message.chat.type === 'private') {
+          this.linkAccounts(message.from.id, message.from.first_name)
+            .then(body => {
+              this.bot.sendMessage(message.from.id, 'Для связи аккаунтов telegram и bezumnoe перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid + ' и авторизуйтесь');
+            });
+        } else {
+          this.bot.sendMessage(message.chat.id, 'Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
         }
-    }
+        break;
+      default:
+        if (fromMainChannel) {
+          this.postToChat(message.from.first_name, text, message.from.id)
+            .then(body => {
+            });
+        } else {
+          this.bot.sendMessage(message.chat.id, 'Привет, ' + message.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
+        }
+      }
+  }
 
-  repost(message) {
+  processChatUpdate(message) {
     var text = message.text;
     var boldLinks = false;
     if (message.user_id === '') {
@@ -151,7 +152,6 @@ class BezumnoeBot {
           })
       });
   }
-
 };
 
 module.exports = BezumnoeBot;

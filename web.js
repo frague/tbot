@@ -25,16 +25,13 @@ module.exports = Bot => {
 
   app.post('/' + token, (req, res) => {
     // Endpoint fot telegram to send its updates
-    console.log('from channel:', JSON.stringify(req.body));
-    bezumnoe.bot.processUpdate(req.body);
+    bezumnoe.processTelegramUpdate(req.body);
     res.sendStatus(200);
   });
 
   app.post('/push', (req, res) => {
     // Endpoint for chat to push messages to
-    var body = req.body;
-    bezumnoe.repost(body);
-    console.log('from chat:', body);
+    bezumnoe.processChatUpdate(req.body);
     res.status(200).end();
   });
 
