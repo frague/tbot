@@ -26,6 +26,7 @@ class BezumnoeBot {
   }
 
   processTelegramUpdate(data) {
+    console.log('Update', data);
     this.bot.processUpdate(data);
   }
 
@@ -63,6 +64,7 @@ class BezumnoeBot {
   }
 
   processChatUpdate(message) {
+    console.log('Chat', message);
     var text = message.text;
     var boldLinks = false;
     if (message.user_id === '') {
