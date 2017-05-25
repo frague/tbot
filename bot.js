@@ -47,12 +47,14 @@ class BezumnoeBot {
           .then(body => {
             this.bot.sendMessage(
               message.from.id,
-              'Для связи аккаунтов telegram и bezumnoe перейдите по ссылке и авторизуйтесь',
+              'Для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке и авторизуйтесь',
               {
-                inline_keyboard: [[{
-                  text: 'Авторизоваться в чате',
-                  url: 'http://bezumnoe.ru/t/' + body.uuid
-                }]]
+                reply_markup: {
+                  inline_keyboard: [[{
+                    text: 'Авторизоваться в чате',
+                    url: 'http://bezumnoe.ru/t/' + body.uuid
+                  }]]
+                }
               }
             );
           });
