@@ -46,12 +46,12 @@ class BezumnoeBot {
         this.linkAccounts(message.from.id, message.from.first_name)
           .then(body => {
             this.bot.sendMessage(
-              message.from.id,
-              'Для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке и авторизуйтесь',
+              message.chat.id,
+              message.from.first_name + ', для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке и авторизуйтесь',
               {
                 reply_markup: {
                   inline_keyboard: [[{
-                    text: 'Авторизоваться в чате',
+                    text: 'Связать аккаунты',
                     url: 'http://bezumnoe.ru/t/' + body.uuid
                   }]]
                 }
