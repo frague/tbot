@@ -56,7 +56,6 @@ class BezumnoeBot {
               }
             );
           });
-        }
         break;
       default:
         if (fromMainChannel) {
