@@ -43,13 +43,19 @@ class BezumnoeBot {
         this.kickActions(message, false);
         break;
       case 'link':
-        if (message.chat.type === 'private') {
-          this.linkAccounts(message.from.id, message.from.first_name)
-            .then(body => {
-              this.bot.sendMessage(message.from.id, 'Для связи аккаунтов telegram и bezumnoe перейдите по ссылке http://bezumnoe.ru/t/' + body.uuid + ' и авторизуйтесь');
-            });
-        } else {
-          this.bot.sendMessage(message.chat.id, 'Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
+        this.linkAccounts(message.from.id, message.from.first_name)
+          .then(body => {
+            this.bot.sendMessage(
+              message.from.id,
+              'Для связи аккаунтов telegram и bezumnoe перейдите по ссылке и авторизуйтесь',
+              {
+                inline_keyboard: [[{
+                  text: 'Авторизоваться в чате',
+                  url: 'http://bezumnoe.ru/t/' + body.uuid
+                }]]
+              }
+            );
+          });
         }
         break;
       default:
