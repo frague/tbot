@@ -47,11 +47,11 @@ class BezumnoeBot {
           .then(body => {
             this.bot.sendMessage(
               message.chat.id,
-              message.from.first_name + ', для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке и авторизуйтесь',
+              message.from.first_name + ', для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке ниже и авторизуйтесь',
               {
                 reply_markup: {
                   inline_keyboard: [[{
-                    text: 'Связать аккаунты',
+                    text: 'Перейти в чат',
                     url: 'http://bezumnoe.ru/t/' + body.uuid
                   }]]
                 }
