@@ -113,7 +113,19 @@ class BezumnoeBot {
     return request(options);
   }
 
+  sendPostNew(data) {
+    var options = {
+        method: 'POST',
+        uri: 'https://bzmn.xyz/api/1.0/telegram',
+        form: data,
+        json: true
+    }
+    return request(options);
+  }
+
   postToChat(userName, message, userId) {
+    this.sendPostNew({user: userName, message: message, user_id: userId});
+
     return this.sendPost(
       'external_messages.service',
       {user: userName, message: message, user_id: userId}
