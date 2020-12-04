@@ -1,1 +1,1 @@
-web: $npm dist/server.js
+web: node dist/server.js
