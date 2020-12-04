@@ -19,7 +19,7 @@ class BezumnoeBot {
 
     if (isProduction) {
       this.bot.webhookReply = true;
-      this.bot.telegram.setWebHook(`${HEROKU_URL}/${webhookPath}`);
+      this.bot.setWebHook(`${HEROKU_URL}/${webhookPath}`);
     };
 
     // Handle commands
