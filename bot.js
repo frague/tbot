@@ -1,77 +1,91 @@
-var Bot = require('node-telegram-bot-api');
-var request = require('request-promise');
-var settings = require('./settings.json');
+const {Telegraf} = require('telegraf');
+const Telegram = require('telegraf/telegram')
 
-var token = process.env.TOKEN;
+const fetch = require('node-fetch');
+const {URLSearchParams} = require('url');
+
+const {channelId, webhookPath, botName} = require('./settings.json');
+const {TOKEN, HEROKU_URL, NODE_ENV} = process.env;
+
+const isProduction = NODE_ENV === 'production';
 
 class BezumnoeBot {
-
   constructor() {
-    if (process.env.NODE_ENV === 'production') {
-      this.bot = new Bot(token);
-      this.bot.setWebHook(process.env.HEROKU_URL + token, {});
-    } else {
-      this.bot = new Bot(token, {
-        polling: true
-      });
+    this.bot = new Telegraf(TOKEN);
+
+    this.bot.catch((error, ctx) => {
+      console.warn(`Bot error occured for ${ctx.updateType}:`, error);
+    });
+
+    if (isProduction) {
+      this.bot.webhookReply = true;
+      this.bot.telegram.setWebHook(`${HEROKU_URL}/${webhookPath}`);
     };
 
-    console.log('Bot server started in the ' + process.env.NODE_ENV + ' mode');
+    // Handle commands
+    this.registerCommandsHandlers();
 
-    this.bot.onText(/^/, message => this.processMessage(message));
+    // Handle channel messages
+    this.bot.on('text', (ctx) => this.processMessage(ctx));
 
-    this.bot.on('webhook_error', error => {
-      console.warn(error.code);
+    console.log(`Telegram bot has started in ${isProduction ? 'production' : 'development'} mode`);
+    this.bot.launch();
+  }
+
+  webhookCallback() {
+    return this.bot.webhookCallback(`/${webhookPath}`);
+  }
+
+  // Handle bot commands
+  registerCommandsHandlers() {
+    // Kick user (results in banning them in chat/channel)
+    this.bot.command('kick', ({message}) => this.kickActions(message, true));
+
+    // Unban user (unbans them in both chat and channel)
+    this.bot.command('unban', ({message}) => this.kickActions(message, false));
+
+    this.bot.command('test', (ctx) => {
+      console.log('Command', ctx);
+    });
+    
+    // Handles linking chat account with the telegram one
+    this.bot.command('link', async ({message: {from}, chat: {id, type}, reply}) => {
+      if (type === 'private') {
+        const {uuid} = await (await this.linkAccounts(from.id, from.first_name)).json();
+
+        if (!uuid) {
+          return reply('Невозможно получить ссылку для привязки аккаунта');
+        }
+          
+        reply(
+          `${from.first_name}, для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке ниже и авторизуйтесь:`,
+          {
+            reply_markup: {
+              inline_keyboard: [[{
+                text: 'Перейти в чат',
+                url: `http://bezumnoe.ru/t/${uuid}`
+              }]]
+            }
+          }
+        );
+      } else {
+        reply('Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
+      }      
     });
   }
 
-  processTelegramUpdate(data) {
-    console.log('Update', JSON.stringify(data));
-    this.bot.processUpdate(data);
-  }
-
-  processMessage(message) {
-    var text = message.text;
-    var command = text.replace(/\/([^@]+)(@.*){0,1}$/g, '$1');
-    var fromMainChannel = message.chat.id === settings.channelId;
-
-    switch (command) {
-      case 'kick':
-        this.kickActions(message, true);
-        break;
-      case 'unban':
-        this.kickActions(message, false);
-        break;
-      case 'link':
-        if (message.chat.type === 'private') {
-          this.linkAccounts(message.from.id, message.from.first_name)
-            .then(body => {
-              this.bot.sendMessage(
-                message.chat.id,
-                message.from.first_name + ', для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке ниже и авторизуйтесь:',
-                {
-                  reply_markup: {
-                    inline_keyboard: [[{
-                      text: 'Перейти в чат',
-                      url: 'http://bezumnoe.ru/t/' + body.uuid
-                    }]]
-                  }
-                }
-              );
-            });
-        } else {
-          this.bot.sendMessage(message.chat.id, 'Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
-        }
-        break;
-      default:
-        if (fromMainChannel) {
-          this.postToChat(message.from.first_name, text, message.from.id)
-            .then(body => {
-            });
-        } else {
-          this.bot.sendMessage(message.chat.id, 'Привет, ' + message.from.first_name + '! Заходи в группу https://t.me/bezumnoe');
-        }
-      }
+  processMessage({message: {text, from, message_id}, chat: {id}, reply}) {
+    console.log(`${from.first_name}: ${text}`);
+    // const command = text.replace(/\/([^@]+)(@.*){0,1}$/g, '$1');
+    const fromMainChannel = id === channelId;
+    if (fromMainChannel) {
+      this.postToChat(from.first_name, text, from.id)
+        .then(body => {
+          console.log('Message acknowledged:', message_id);
+        });
+    } else {
+      reply('Привет, ' + from.first_name + '! Заходи в группу https://t.me/bezumnoe');
+    }
   }
 
   processChatUpdate(message) {
@@ -100,82 +114,72 @@ class BezumnoeBot {
     if (boldLinks) {
       text = text.replace(/<a[^>]*>/g, '<b>').replace(/<\/a>/g, '</b>');
     }
-    this.bot.sendMessage(settings.channelId, text, {parse_mode: 'HTML'});
+    this.bot.telegram.sendMessage(channelId, text, {parse_mode: 'HTML'});
   };
 
-  sendPost(endpoint, data) {
-    var options = {
-        method: 'POST',
-        uri: 'http://bezumnoe.ru/services/' + endpoint + '.php',
-        form: data,
-        json: true
-    }
-    return request(options);
-  }
-
-  sendPostNew(data) {
-    var options = {
-        method: 'POST',
-        uri: 'https://bzmn.xyz/api/1.0/telegram',
-        form: data,
-        json: true
-    }
-    return request(options);
-  }
-
   postToChat(userName, message, userId) {
-    this.sendPostNew({user: userName, message: message, user_id: userId});
+    const data = {user: userName, message: message, user_id: userId};
+    
+    this.postJson('telegram', data);
+    return this.post('external_messages.service', data);
+  }
 
-    return this.sendPost(
-      'external_messages.service',
-      {user: userName, message: message, user_id: userId}
-    );
+  post(endpoint, data) {
+    const body = new URLSearchParams();
+    Object.entries(data).forEach(([key, value]) => body.append(key, value));
+    return fetch(`http://bezumnoe.ru/services/${endpoint}.php`, {method: 'post', body});
+  }
+
+  postJson(endpoint, data) {
+    var options = {
+      method: 'post',
+      body: JSON.stringify(data),
+      headers: {'Content-Type': 'application/json'}
+    }
+    return fetch(`https://bzmn.xyz/api/${endpoint}`, options);
   }
 
   linkAccounts(userId, userName) {
-    return this.sendPost('telegram_linker.service', {user_id: userId, username: userName});
+    return this.post('telegram_linker.service', {user_id: userId, username: userName});
   }
 
-  kickActions(message, isKick) {
-    var reply = message.reply_to_message;
-    var fromId = message.from.id;
-    var chatId = message.chat.id;
-    if (!reply) {
-      return this.bot.sendMessage(chatId, 'Это работает только в ответе на сообщение');
+  async kickActions({reply_to_message: sourceMessage, from: {id: fromId}, chat: {id: chatId}, reply}, isKick) {
+    if (!sourceMessage) {
+      return reply('Это работает только в ответе на сообщение');
     }
-    return this.bot.getMe()
-      .then(me => {
-        if (reply.from.id === me.id) {
-          return this.bot.sendMessage(chatId, 'Не балуй!');
-        }
-        return this.sendPost(
-          'rights.service',
-          {mtid: fromId, ttid: reply.from.id}
-        )
-          .then(body => {
-            var isAllowed = body.me >= 20 && body.me >= body.target;
-            if (isAllowed) {
-              var name = reply.from.first_name;
-              if (isKick) {
-                return this.bot.kickChatMember(chatId, reply.from.id)
-                  .then(result => {
-                    if (result) {
-                      this.bot.sendMessage(chatId, '<i>' + name + ' занесён в черный список</i>', {parse_mode: 'HTML'});
-                    }
-                  });
-              } else {
-                return this.bot.unbanChatMember(chatId, reply.from.id)
-                  .then(result => {
-                    if (result) {
-                      this.bot.sendMessage(chatId, '<i>' + name + ' удалён из черного списка</i>', {parse_mode: 'HTML'});
-                    }
-                  });
-              }
-            } else {
-              return this.bot.sendMessage(chatId, 'Прав маловато...');
+    
+    if (sourceMessage.from.username === botName) {
+      return reply('Не балуй!');
+    }
+    
+    const {me, target} = await post(
+      'rights.service',
+      {
+        mtid: fromId,
+        ttid: sourceMessage.from.id
+      }
+    );
+
+    if (me >= 20 && me >= target) {
+      var name = sourceMessage.from.first_name;
+      if (isKick) {
+        return this.bot.kickChatMember(chatId, sourceMessage.from.id)
+          .then(result => {
+            if (result) {
+              this.bot.sendMessage(chatId, '<i>' + name + ' занесён в черный список</i>', {parse_mode: 'HTML'});
             }
-          })
-      });
+          });
+      } else {
+        return this.bot.unbanChatMember(chatId, sourceMessage.from.id)
+          .then(result => {
+            if (result) {
+              this.bot.sendMessage(chatId, '<i>' + name + ' удалён из черного списка</i>', {parse_mode: 'HTML'});
+            }
+          });
+      }
+    } else {
+      return this.bot.sendMessage(chatId, 'Прав маловато...');
+    }
   }
 };
 

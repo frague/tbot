@@ -1,3 +1,5 @@
 {
-	"channelId": -1001100829569
+	"channelId": -1001100829569,
+  "webhookPath": "/thook",
+  "botName": "bezumnoe_bot"
 }
