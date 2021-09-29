@@ -1,5 +1,4 @@
 const {Telegraf} = require('telegraf');
-const Telegram = require('telegraf/telegram')
 
 const fetch = require('node-fetch');
 const {URLSearchParams} = require('url');
@@ -18,7 +17,7 @@ class BezumnoeBot {
     });
 
     if (isProduction) {
-      this.bot.webhookReply = true;
+      // this.bot.webhookReply = true;
       this.bot.setWebHook(`${HEROKU_URL}/${webhookPath}`);
     };
 
@@ -30,6 +29,7 @@ class BezumnoeBot {
 
     console.log(`Telegram bot has started in ${isProduction ? 'production' : 'development'} mode`);
     this.bot.launch();
+    // this.bot.startWebhook(`${webhookPath}`, null, 5000);
   }
 
   webhookCallback() {
