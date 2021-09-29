@@ -19,7 +19,6 @@ class BezumnoeBot {
     });
 
     if (isProduction) {
-      // this.bot.webhookReply = true;
       this.bot.telegram.setWebhook(`${HEROKU_URL}/${webhookPath}`);
     };
 
