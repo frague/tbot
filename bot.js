@@ -9,6 +9,8 @@ const {TOKEN, HEROKU_URL, NODE_ENV} = process.env;
 const isProduction = NODE_ENV === 'production';
 
 class BezumnoeBot {
+  bot;
+  
   constructor() {
     this.bot = new Telegraf(TOKEN);
 
@@ -18,7 +20,7 @@ class BezumnoeBot {
 
     if (isProduction) {
       // this.bot.webhookReply = true;
-      this.bot.setWebHook(`${HEROKU_URL}/${webhookPath}`);
+      this.bot.telegram.setWebhook(`${HEROKU_URL}/${webhookPath}`);
     };
 
     // Handle commands
@@ -29,7 +31,6 @@ class BezumnoeBot {
 
     console.log(`Telegram bot has started in ${isProduction ? 'production' : 'development'} mode`);
     this.bot.launch();
-    // this.bot.startWebhook(`${webhookPath}`, null, 5000);
   }
 
   webhookCallback() {
@@ -49,42 +50,47 @@ class BezumnoeBot {
     });
     
     // Handles linking chat account with the telegram one
-    this.bot.command('link', async ({message: {from}, chat: {id, type}, reply}) => {
-      if (type === 'private') {
-        const {uuid} = await (await this.linkAccounts(from.id, from.first_name)).json();
+    this.bot.command(
+      'link', 
+      async ({message, chat, telegram}) => {
+        if (chat.type === 'private') {
+          const {uuid} = await (await this.linkAccounts(message.from.id, message.from.first_name)).json();
 
-        if (!uuid) {
-          return reply('Невозможно получить ссылку для привязки аккаунта');
-        }
-          
-        reply(
-          `${from.first_name}, для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке ниже и авторизуйтесь:`,
-          {
-            reply_markup: {
-              inline_keyboard: [[{
-                text: 'Перейти в чат',
-                url: `http://bezumnoe.ru/t/${uuid}`
-              }]]
-            }
+          if (!uuid) {
+            return sendMessage(chat.id, 'Невозможно получить ссылку для привязки аккаунта');
           }
-        );
-      } else {
-        reply('Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
-      }      
-    });
+            
+          telegram.sendMessage(
+            chat.id,
+            `${message.from.first_name}, для связи аккаунтов telegram и bezumnoe.ru перейдите по ссылке ниже и авторизуйтесь:`,
+            {
+              reply_markup: {
+                inline_keyboard: [[{
+                  text: 'Перейти в чат',
+                  url: `http://bezumnoe.ru/t/${uuid}`
+                }]]
+              }
+            }
+          );
+        } else {
+          telegram.sendMessage(chat.id, 'Необходимо обратиться к боту @bezumnoe_bot в приватном чате');
+        }      
+      }
+    );
   }
 
-  processMessage({message: {text, from, message_id}, chat: {id}, reply}) {
+  processMessage(ctx) {
+    const {message: {text, from, message_id}, chat, telegram} = ctx;
     console.log(`${from.first_name}: ${text}`);
-    // const command = text.replace(/\/([^@]+)(@.*){0,1}$/g, '$1');
-    const fromMainChannel = id === channelId;
+
+    const fromMainChannel = chat.id === channelId;
     if (fromMainChannel) {
       this.postToChat(from.first_name, text, from.id)
-        .then(body => {
+        .then(() => {
           console.log('Message acknowledged:', message_id);
         });
     } else {
-      reply('Привет, ' + from.first_name + '! Заходи в группу https://t.me/bezumnoe');
+      telegram.sendMessage(chat.id, 'Привет, ' + from.first_name + '! Заходи в группу https://t.me/bezumnoe');
     }
   }
 
