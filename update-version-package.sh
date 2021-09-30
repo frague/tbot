@@ -35,4 +35,4 @@ update_version
 npm version | head -2 | tail -1
 
 # track the change
-git add package.json
+git add packag*.json
