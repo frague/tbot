@@ -78,13 +78,14 @@ class BezumnoeBot {
     );
   }
 
+  // Repost telegram messages to web-chats
   processMessage(ctx) {
     const {message: {text, from, message_id}, chat, telegram} = ctx;
     console.log(`${from.first_name}: ${text}`);
 
     const fromMainChannel = chat.id === channelId;
     if (fromMainChannel) {
-      this.postToChat(from.first_name, text, from.id)
+      this.postToChats(from.first_name, text, from.id)
         .then(() => {
           console.log('Message acknowledged:', message_id);
         });
@@ -93,6 +94,7 @@ class BezumnoeBot {
     }
   }
 
+  // Repost web-chat messages to telegram
   processChatUpdate(message) {
     console.log('Chat', JSON.stringify(message));
     var text = message.text;
@@ -122,26 +124,37 @@ class BezumnoeBot {
     this.bot.telegram.sendMessage(channelId, text, {parse_mode: 'HTML'});
   };
 
-  postToChat(userName, message, userId) {
+  postToChats(userName, message, userId) {
     const data = {user: userName, message: message, user_id: userId};
     
-    this.postJson('telegram', data);
-    return this.post('external_messages.service', data);
+    return Promise.all([
+      this.postJson('telegram', data),
+      this.post('external_messages.service', data)
+    ]);
   }
 
   post(endpoint, data) {
     const body = new URLSearchParams();
     Object.entries(data).forEach(([key, value]) => body.append(key, value));
-    return fetch(`http://bezumnoe.ru/services/${endpoint}.php`, {method: 'post', body});
+    return fetch(
+      `http://bezumnoe.ru/services/${endpoint}.php`,
+      {method: 'post', body}
+    ).catch((error) => {
+      console.log(`Failed to query bezumnoe.ru`, error);
+    });
   }
 
   postJson(endpoint, data) {
-    var options = {
-      method: 'post',
-      body: JSON.stringify(data),
-      headers: {'Content-Type': 'application/json'}
-    }
-    return fetch(`https://bzmn.xyz/api/${endpoint}`, options);
+    return fetch(
+      `https://bzmn.xyz/api/${endpoint}`,
+      {
+        method: 'post',
+        body: JSON.stringify(data),
+        headers: {'Content-Type': 'application/json'}
+      }
+    ).catch((error) => {
+      console.log(`Failed to post message to bzmn.xyz`, error);
+    });
   }
 
   linkAccounts(userId, userName) {
