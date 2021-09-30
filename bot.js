@@ -96,27 +96,22 @@ class BezumnoeBot {
 
   // Repost web-chat messages to telegram
   processChatUpdate(message) {
-    console.log('Chat', JSON.stringify(message));
-    var text = message.text;
+    console.log('Chat:', message);
+    var text = message.text.replace(/&[lr]aquo;/g, '"');
     var boldLinks = false;
     if (message.user_id === '') {
       // Topic change
-      text = '<i>' +  (text.replace(/&[lr]aquo;/g, '"')) + '</i>';
-      text = '&#127988; ' + (text.replace(/<a[^>]*>/g, '').replace(/<\/a>/g, ''));
+      text = `&#127988; <i>${text.replace(/<a[^>]*>/g, '').replace(/<\/a>/g, '')}</i>`;
     } else if (message.user_id === message.to_user_id) {
       // /me message
-      text = '<i>' + message.user_name + ' ' + text + '</i>';
-    } else if (message.user_id === -2) {
-      // Entering
-      text = '&#128682; ' + text;
-      boldLinks = true;
-    } else if (message.user_id === -3) {
-      // Quiting
-      text = '&#128682; ' + text;
+      text = `<i>${message.user_name} ${text}</i>`;
+    } else if (message.user_id < 0) {
+      // Entering: -2, leaving: -3
+      text = `&#128682; ${text}`;
       boldLinks = true;
     } else {
       // Everything else
-      text = '<b>' + message.user_name + '</b>: ' + text;
+      text = `<b>${message.user_name}</b>: ${text}`;
     }
     if (boldLinks) {
       text = text.replace(/<a[^>]*>/g, '<b>').replace(/<\/a>/g, '</b>');
