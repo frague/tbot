@@ -108,11 +108,11 @@ class BezumnoeBot {
       text = '<i>' + message.user_name + ' ' + text + '</i>';
     } else if (message.user_id === -2) {
       // Entering
-      text = '&#8680; ' + text;
+      text = '&#128682; ' + text;
       boldLinks = true;
     } else if (message.user_id === -3) {
       // Quiting
-      text = '&#8678; ' + text;
+      text = '&#128682; ' + text;
       boldLinks = true;
     } else {
       // Everything else
