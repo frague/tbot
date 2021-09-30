@@ -23,6 +23,7 @@ update_version(){
 
     # overwrite it in the package.json file
     sed -e "2,4s/$old_version/$new_version/" -i "" package.json
+    sed -e "2,10s/$old_version/$new_version/" -i "" package-lock.json
 }
 
 # show off the old version

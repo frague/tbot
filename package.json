@@ -1,6 +1,6 @@
 {
   "name": "bezumnoe-telegram-bot",
-  "version": "2.0.7",
+  "version": "2.0.10",
   "engines": {
     "node": "16.x"
   },
