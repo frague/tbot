@@ -2,6 +2,7 @@ const express = require('express');
 const Bot = require('./bot');
 
 const {version} = require('./package.json');
+const {PORT = 8088} = process.env;
 
 const app = express();
 app.use(express.json());
@@ -17,7 +18,7 @@ app.post('/push', ({body}, res) => {
   res.status(200).end();
 });
 
-const server = app.listen(process.env.PORT || 8088, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   const {address, port} = server.address();
   console.log(`Web server started at https://${address}:${port}`);
 });
