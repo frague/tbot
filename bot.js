@@ -27,7 +27,8 @@ class BezumnoeBot {
     if (isProduction) {
       this.bot.launch({
         webhook: {
-          hookPath: `${HEROKU_URL}/${webhookPath}`
+          domain: HEROKU_URL,
+          hookPath: webhookPath
         }
       });
     } else {
@@ -42,7 +43,7 @@ class BezumnoeBot {
   }
 
   webhookCallback() {
-    return this.bot.webhookCallback(`/${webhookPath}`);
+    return this.bot.webhookCallback(webhookPath);
   }
 
   // Handle bot commands

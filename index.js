@@ -1,6 +1,7 @@
 const express = require('express');
 const Bot = require('./bot');
 
+const {webhookPath} = require('./settings.json');
 const {version} = require('./package.json');
 const {PORT = 8088} = process.env;
 
