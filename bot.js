@@ -18,22 +18,32 @@ class BezumnoeBot {
       console.warn(`Bot error occured for ${ctx.updateType}:`, error);
     });
 
-    if (isProduction) {
-      this.bot.telegram.setWebhook(`${HEROKU_URL}/${webhookPath}`);
-    };
-
     // Handle commands
     this.registerCommandsHandlers();
-
+    
     // Handle channel messages
     this.bot.on('text', (ctx) => this.processMessage(ctx));
+    
+    if (isProduction) {
+      this.bot.launch({
+        webhook: {
+          domain: HEROKU_URL,
+          hookPath: webhookPath
+        }
+      });
+    } else {
+      this.bot.launch();
+    };
 
     console.log(`Telegram bot has started in ${isProduction ? 'production' : 'development'} mode`);
-    this.bot.launch();
+
+    // Enable graceful stop
+    process.once('SIGINT', () => this.bot.stop('SIGINT'));
+    process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
   }
 
   webhookCallback() {
-    return this.bot.webhookCallback(`/${webhookPath}`);
+    return this.bot.webhookCallback(webhookPath);
   }
 
   // Handle bot commands
