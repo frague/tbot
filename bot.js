@@ -107,7 +107,7 @@ class BezumnoeBot {
       text = `<i>${message.user_name} ${text}</i>`;
     } else if (message.user_id < 0) {
       // Entering: -2, leaving: -3
-      text = `&#128682; ${text}`;
+      text = `${message.user_id === -2 ? '&#10219;' : '&#10218;'} ${text}`;
       boldLinks = true;
     } else {
       // Everything else
