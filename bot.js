@@ -95,7 +95,7 @@ class BezumnoeBot {
 
     const fromMainChannel = chat.id === channelId;
     if (fromMainChannel) {
-      this.postToChats(from.first_name, text, from.id)
+      this.postToChats(from, text)
         .then(() => {
           console.log('Message acknowledged:', message_id);
         });
@@ -129,8 +129,8 @@ class BezumnoeBot {
     this.bot.telegram.sendMessage(channelId, text, {parse_mode: 'HTML'});
   };
 
-  postToChats(userName, message, userId) {
-    const data = {user: userName, message: message, user_id: userId};
+  postToChats({id, first_name: user, username: tlogin}, message) {
+    const data = {user, message, user_id: id, tlogin};
     
     return Promise.all([
       this.postJson('telegram', data),
