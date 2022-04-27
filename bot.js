@@ -111,7 +111,7 @@ class BezumnoeBot {
     var boldLinks = false;
     if (message.user_id === '') {
       // Topic change
-      text = `&#128681; <i>${text.replace(/<a[^>]*>/g, '').replace(/<\/a>/g, '')}</i>`;
+      text = `&#10000; <i>${text}</i>`;
     } else if (message.user_id === message.to_user_id) {
       // /me message
       text = `<i>${message.user_name} ${text}</i>`;
