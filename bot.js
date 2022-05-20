@@ -54,6 +54,21 @@ class BezumnoeBot {
     // Unban user (unbans them in both chat and channel)
     this.bot.command('unban', ({message}) => this.kickActions(message, false));
 
+    // Show link to user's chat profile
+    this.bot.command('who', ({reply_to_message: sourceMessage, from: {id: fromId}, chat: {id: chatId}, reply}) => {
+      if (sourceMessage.from.username === botName) {
+        // YTKA
+        return reply(showUserInfo(4492));
+      }
+
+      // Determine requestor id
+      let tUserId = sourceMessage ? sourceMessage.from.id : fromId;
+      // Looking up bezumnoe db for the user with such id
+      const {id} = await post('telegram.service', {userId: tUserId});
+      // Provide a link to their profile if found
+      reply(id ? showUserInfo(id) : 'Мы пока не знакомы...');
+    });
+
     this.bot.command('test', (ctx) => {
       console.log('Command', ctx);
     });
@@ -86,6 +101,10 @@ class BezumnoeBot {
         }      
       }
     );
+  }
+
+  showUserInfo(userId) {
+    return `http://www.bezumnoe.ru/user/${userId}.html`;
   }
 
   // Repost telegram messages to web-chats
